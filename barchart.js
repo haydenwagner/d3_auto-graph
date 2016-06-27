@@ -12,7 +12,9 @@
             left: 5
         };
 
-var data = addData([], 15, 300);
+var timeInterval = d3.time.day;
+
+var data = addData([], 150, 300);
 
 var value = function(d){ return d.date; };
 
@@ -20,7 +22,7 @@ var value = function(d){ return d.date; };
 
 var barcode = barcodeChart()
     .width(500)
-    .height(70);
+    .height(30);
 
 var xScale = d3.time.scale()
     .domain(d3.extent(data, value))
@@ -47,6 +49,14 @@ d3.select('#chart-example').append('svg')
                 .attr('y2', height - margin.top - margin.bottom)
                 .attr('stroke', '#000')
                 .attr('stroke-opacity', 0.5);
+
+var lines = d3.selectAll('#g-container line');
+console.log(lines);
+
+lines.transition()
+    .duration(500)
+    .attr('x1', function(d){ return xScale(value(d));})
+    .attr('x2', function(d){ return xScale(value(d));});
 
 
 // d3.select('#chart').append('div')
