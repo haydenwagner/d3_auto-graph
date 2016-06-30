@@ -4,8 +4,27 @@ var width = 300,
         top: 5,
         right: 5,
         bottom: 5,
-        left: 5
+        left: 35
     };
+
+var dat = [
+    {
+        name: 'Apple',
+        price: 0
+    },
+    {
+        name: 'Micr',
+        price: 0
+    },
+    {
+        name: 'Sony',
+        price: 0
+    },
+    {
+        name: 'Johns',
+        price: 0
+    },
+];
 
 var data = [
     {
@@ -29,21 +48,25 @@ var data = [
 var value = function(d){ return d.price; };
 console.log( value( d3.max(data) ) );
 
-var barWidth = 25;
+var barWidth = 45;
 
-var xScale = d3.scale.linear()
+var xScale = d3.scaleLinear()
     .domain([0, data.length])
-    .range([40 + margin.left, width - margin.right ]);
+    .range([margin.left, width]);
 
-var yScale = d3.scale.linear()
-    .domain([0, value( d3.max(data) ) ] )
+var yScale = d3.scaleLinear()
+    .domain([0, value( d3.max(data) ) + 10 ] )
     .rangeRound([height - 10, 0]);
 
 
-var yAxis = d3.svg.axis()
-    .scale(yScale)
-    .orient("left")
-    .ticks(5);
+var yAxis = d3.axisRight(yScale)
+    .ticks(5)
+    .tickSize(width)
+    .tickPadding(5);
+
+// var xAxis = d3.axisBottom(yScale)
+//     .ticks(0);
+
 
 
 
@@ -59,9 +82,9 @@ d3.select('#chart-example').append('svg')
     .append('g')
         .attr('id','g-container')
         .attr('class', 'chart-content')
-        .attr('transform', 'translate(' + [margin.top, margin.left] + ')')
+        .attr('transform', 'translate(' + [0, margin.top] + ')')
         .selectAll('rect')
-            .data(data)
+            .data(dat)
             .enter()
             .append('rect')
                 .attr('x', function(d, i){ return xScale( i ); })
@@ -75,39 +98,75 @@ d3.select('#chart-example').append('svg')
                 })
                 .attr('width', barWidth)
                 .attr('fill', '#000')
-                .attr('stroke', '#000')
-                .attr('stroke-opacity', 0.5);
+                //.attr('stroke', '#000')
+                //.attr('stroke-opacity', 0.5);
 
 //Create Y axis
 var yAxis = d3.select('.chart-svg')
+    .style("padding", "10px")
     .append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(" + 40 + ",5)")
+    .attr("class", "y axis")
+    .attr("transform", "translate(" + 0 + ",5)")
     .call(yAxis);
+
+
+yAxis.selectAll("text")
+    .attr("x", 4)
+    .attr("dy", -4);
+
+yAxis.selectAll("g").filter(function(d) { console.log(d);return d; })
+    .classed("minor", true);
+
+//var yTicks = d3.selectAll(".yAxis .tick line")
+//     .attr('stroke-width', '5px')
+//     .attr('y1', -2.5)
+//     .attr('y2', -2.5);
+
+// console.log(yTicks);
+
+
+// var xAxis = d3.select('.chart-svg')
+//     .style("padding", "10px")
+//     .append("g")
+//     .attr("class", "x axis")
+//     .attr("transform", "translate(" + 40 + "," + (height - 10) + ")")
+//     .call(xAxis);
+
+// var xAxisPath = d3.select('.xAxis path')
+//     .attr('stroke-width', function(){console.log(this);});
 
 console.log(yAxis);
 
-yAxis.selectAll('text')
-    .style('fill', '#202020')
-    .style('font-family', 'verdana')
-    .attr('x', -15);
+// yAxis.selectAll('text')
+//     .style('fill', '#202020')
+//     .style('font-family', 'verdana')
+//     .attr('x', -15);
 
-yAxis.selectAll('line')
-    .attr('x2', -10)
-    .style('stroke', '#000');
+// yAxis.selectAll('line')
+//     .attr('x2', -10)
+//     .style('stroke', '#000');
 
 // yAxis.selectAll('.tick')
 //     .attr('transform', 'translate(' +)
 
 
 
-// var lines = d3.selectAll('#g-container line');
+var lines = d3.selectAll('rect');
 // console.log(lines);
 
-// lines.transition()
-//     .duration(500)
-//     .attr('x1', function(d){ return xScale(value(d));})
-//     .attr('x2', function(d){ return xScale(value(d));});
+lines.data(data);
+
+lines.transition()
+    .duration(1000)
+    .attr('y', function(d){ return yScale( value(d) );})
+    .attr('height', function(d){
+        console.log(d);
+        console.log( value(d) );
+        console.log( height );
+        console.log( yScale( value(d) ) );
+        return height - 10 - yScale( value(d) );
+    });
+
 
 
 // d3.select('#chart').append('div')
