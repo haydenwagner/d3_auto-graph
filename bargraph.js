@@ -7,6 +7,7 @@ var width = 300,
         left: 35
     };
 
+
 var dat = [
     {
         name: 'Apple',
@@ -29,22 +30,27 @@ var dat = [
 var data = [
     {
         name: 'Apple',
-        price: 90
+        price: 85,
+        start: 0
     },
     {
-        name: 'Micr',
-        price: 30
+        name: 'Mcrsft',
+        price: 90,
+        start: 0
     },
     {
         name: 'Sony',
-        price: 60
+        price: 30,
+        start: 0
     },
     {
-        name: 'Johns',
-        price: 50
+        name: 'Google',
+        price: 70,
+        start: 0
     },
 ];
 
+var startValue = function(d){ return d.start; };
 var value = function(d){ return d.price; };
 console.log( value( d3.max(data) ) );
 
@@ -64,10 +70,15 @@ var yAxis = d3.axisRight(yScale)
     .tickSize(width)
     .tickPadding(5);
 
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+
 // var xAxis = d3.axisBottom(yScale)
 //     .ticks(0);
 
 
+//var t = d3.transition()
+    //.duration(750);
+    //.ease(d3.easeLinear);
 
 
 
@@ -75,35 +86,64 @@ var yAxis = d3.axisRight(yScale)
 
 //var divItems = divChart.selectAll('div.data-item')
 
-d3.select('#chart-example').append('svg')
+var svg = d3.select('#chart-example').append('svg')
     .attr('class', 'chart-svg')
     .attr('width', width)
-    .attr('height', height)
-    .append('g')
+    .attr('height', height);
+
+var g = svg.append('g')
         .attr('id','g-container')
         .attr('class', 'chart-content')
-        .attr('transform', 'translate(' + [0, margin.top] + ')')
-        .selectAll('rect')
-            .data(dat)
-            .enter()
-            .append('rect')
-                .attr('x', function(d, i){ return xScale( i ); })
-                .attr('y', function(d){ return yScale( value(d) );})
-                .attr('height', function(d){
-                    console.log(d);
-                    console.log( value(d) );
-                    console.log( height );
-                    console.log( yScale( value(d) ) );
-                    return height - 10 - yScale( value(d) );
-                })
-                .attr('width', barWidth)
-                .attr('fill', '#000')
+        .attr('transform', 'translate(' + [0, margin.top] + ')');
+
+var rect = g.selectAll('rect')
+            .data(dat);
+
+rect.enter()
+    .append('rect')
+    .attr('x', function(d, i){ return xScale( i ); })
+    .attr('y', function(d){ return yScale( value(d) );})
+    .attr('height', function(d){
+        return height - 10 - yScale( value(d) );
+    })
+    .attr('width', barWidth)
+    .attr("fill", function(d,i) { return color(i); } );
+
+var textName = g.selectAll('text.name')
+    .data(data)
+    .enter().append('text')
+    .attr('x', function(d, i){ return xScale( i ); })
+    .attr('y', height + 75)
+    .attr('transform', function(d,i){ return 'rotate(-60,' + (xScale(i) - 25) + ',' + (height + 52.5) +')';})
+    .text(function(d){ return d.name; });
+
+
+function updateData(d){
+    var recty = d3.selectAll('rect');
+
+    recty.data(d);
+
+    recty.transition()
+    .delay(function(d,i){
+        return i * 100;
+    })
+    .duration(function(d,i){
+        //return Math.log(i + 4) * 500;
+        return 800;
+    })
+    .attr('y', function(d){ return yScale( value(d) );})
+    .attr('height', function(d){
+        return height - 10 - yScale( value(d) );
+    });
+}
+
+updateData(data);
                 //.attr('stroke', '#000')
                 //.attr('stroke-opacity', 0.5);
 
 //Create Y axis
 var yAxis = d3.select('.chart-svg')
-    .style("padding", "10px")
+    .style("padding", "10px 10px 50px 10px")
     .append("g")
     .attr("class", "y axis")
     .attr("transform", "translate(" + 0 + ",5)")
@@ -154,18 +194,40 @@ console.log(yAxis);
 var lines = d3.selectAll('rect');
 // console.log(lines);
 
-lines.data(data);
+//lines.data(data);
 
-lines.transition()
-    .duration(1000)
-    .attr('y', function(d){ return yScale( value(d) );})
-    .attr('height', function(d){
-        console.log(d);
-        console.log( value(d) );
-        console.log( height );
-        console.log( yScale( value(d) ) );
-        return height - 10 - yScale( value(d) );
-    });
+// lines.transition()
+//     .duration(function(d,i){
+//         return Math.log(i + 2) * 750;
+//     })
+//     .attr('y', function(d){ return yScale( value(d) );})
+//     .attr('height', function(d){
+//         return height - 10 - yScale( value(d) );
+//     });
+
+//////////////////////////////////////////////////////////////////////////
+
+var count = 0;
+(function binder(){
+    console.log(count);
+    // if( count > 0 && count % 2 === 0 ){
+    //     updateData(data);
+    // }
+    // else if ( count > 0 ){
+    //     updateData(dat);
+    // }
+    if ( count > 0 ){
+        //console.log(dat);
+        for(var x = 0; x < dat.length; x++){
+            console.log(dat[x]);
+            dat[x].price = 90 * Math.random();
+        }
+        //console.log(dat);
+        updateData(dat);
+    }
+    setTimeout(binder, 1500);
+    count++;
+})();
 
 
 
