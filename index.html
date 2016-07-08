@@ -2,8 +2,8 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>D3 Auto Chart</title>
-        <script src="https://d3js.org/d3.v4.js"></script>
+        <title>D3</title>
+        <script src="https://d3js.org/d3.v3.js"></script>
         <script src='custom-chart.js'></script>
         <style>
 
@@ -12,7 +12,8 @@
               font-weight: bold;
             }
 
-            .y.axis path {
+            .y.axis path,
+            .x.axis path {
               display: none;
             }
 
@@ -26,14 +27,19 @@
               stroke-dasharray: 2,2;
             }
 
+            .line {
+              fill: none;
+              stroke: #000;
+            }
+
         </style>
     </head>
     <body>
         <div class='container' style="">
-            <h1>D3 Auto Chart</h1>
+            <h1>idg</h1>
             <div id="chart-example"></div>
         </div>
     </body>
 
-    <script src='bargraph.js'></script>
+    <script src='main.js'></script>
 </html>
